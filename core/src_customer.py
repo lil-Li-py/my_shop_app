@@ -31,7 +31,6 @@ class CustomerUI(CustomerUiMixin, QWidget):
         # 用于分类顾客与商家
         self.me = 0
         # 次数检测
-        self.page1 = 0
         self.page2 = 0
         self._username = info[0]
         self._nickname = info[1]
