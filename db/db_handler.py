@@ -30,12 +30,13 @@ def init_data():
     listing_items : 正在审核的商品 : '[]' 内列表 [[商品名, 价格, 商家, 类型, 商品介绍, 提交时间, [初始为空:审核结果]], ]
     listed_items : 已上架的商品 : '[]' 内列表 [[商品名, 价格, 商家, 类型, 商品介绍, 折扣, 上架时间], ]
     delisted_items : 已下架的商品 : '[]' 内列表 [[商品名, 价格, 商家, 类型, 商品介绍, 下架时间], ]
+    register_time : 注册时间 : str 第一次注册时录入
     is_frozen : 是否被冻结 :bool
     """
     conn = sqlite3.connect('db/data/shopkeeper.db')
     cur = conn.cursor()
     cur.execute("create table if not exists data (username text, password text, income real, sub_pwd text, "
-                "listing_items text, listed_items text, delisted_items text, is_frozen integer)")
+                "listing_items text, listed_items text, delisted_items text, register_time str, is_frozen integer)")
     conn.commit()
     cur.close()
     """
@@ -57,7 +58,6 @@ def init_data():
 
 # 登录检索
 def logging_check(ob):
-    info = []
     dic = {0: 'customer', 1: 'shopkeeper', 2: 'item'}
     conn = sqlite3.connect(f'db/data/{dic[ob.mode]}.db')
     cur = conn.cursor()
@@ -110,8 +110,8 @@ def account_entry(ob):
                         (ob.username, ob.pwd, ob.username, 0, 0, "[]", "[]", ob.register_time, "{'is_diy':False}",
                          0))
         case 1:
-            cur.execute("insert into data values (?, ?, ?, ?, ?, ?, ?, ?)",
-                        (ob.username, ob.pwd, 0, '', '[]', '[]', '[]', 0))
+            cur.execute("insert into data values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (ob.username, ob.pwd, 0, '', '[]', '[]', '[]', ob.register_time, 0))
         case 2:
             cur.execute("insert into data values (?, ?, ?, ?, ?, ?, ?)",
                         ob.item_info)
@@ -152,7 +152,7 @@ def log_out(ob):
 
 
 # 管理员专用
-def admin(mode, **kwargs):
+def admin(mode: int, **kwargs):
     info = []
     if not mode:
         conn = sqlite3.connect('db/data/customer.db')
