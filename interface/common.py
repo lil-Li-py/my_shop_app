@@ -7,11 +7,21 @@ from db.ui.pwd_change_dialog import Ui_Dialog as PwdChangeMixin
 from db.modules import Items
 from interface.customer import call_customer
 from interface.shopkeeper import call_shopkeeper
+from lib.common import logging_save
 
 _translate = QtCore.QCoreApplication.translate
 
 
+# 物品与其类的交互
 def call_item(*args, register=False, update=False, log_out=False, **kwargs):
+    """
+    :param args:
+    :param register: 注册
+    :param update: 更新数据
+    :param log_out: 注销
+    :param kwargs: 更新的数据
+    :return: 检索的数据
+    """
     item = Items(**kwargs)
     if register:
         item.save(*args)
@@ -25,6 +35,7 @@ def call_item(*args, register=False, update=False, log_out=False, **kwargs):
     return item.login_check()[1]
 
 
+# 修改密码窗口
 class PwdChangeWindow(PwdChangeMixin, QDialog):
     def __init__(self, username, father):
         super(PwdChangeWindow, self).__init__()
@@ -95,8 +106,10 @@ class PwdChangeWindow(PwdChangeMixin, QDialog):
         QMessageBox.information(self, '提示', '密码修改成功')
         if not self._me:
             call_customer(self._username, pwd=self._new_pwd, update=True)
+            logging_save(0, f"用户{self._username}成功修改了密码")
         else:
             call_shopkeeper(self._username, pwd=self._new_pwd, update=True)
+            logging_save(1, f"商家{self._username}成功修改了密码")
         self.close()
         self.father.show_start()
         self.father.start.lineEdit.setText(_translate("Form", f"{self._username}"))
