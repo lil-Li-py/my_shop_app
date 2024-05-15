@@ -2,7 +2,6 @@
 开始页面网络视图层代码
 """
 
-import logging
 import sys
 import re
 import time
@@ -13,6 +12,7 @@ from lib.common import except_hook
 from core import src_customer, src_shopkeeper, src_admin
 from interface.customer import call_customer
 from interface.shopkeeper import call_shopkeeper
+from lib.common import logging_save
 
 _translate = QtCore.QCoreApplication.translate
 
@@ -57,10 +57,12 @@ class StartUi(LoginUiMixin, QWidget):
                     return
                 QMessageBox.information(self, '提示', '登录成功, 等待跳转')
                 if self.checkBox.isChecked():
+                    logging_save(1, f"商家{info[0]}登录成功")
                     self.hide()
                     src_shopkeeper.run(self, info)
                 else:
                     self.hide()
+                    logging_save(0, f"用户{info[0]}登录成功")
                     src_customer.run(self, info)
 
     def show_pwd(self):
@@ -136,6 +138,7 @@ class StartUi(LoginUiMixin, QWidget):
         if self.label_3.statusTip() == self.label_4.statusTip() == self.label_5.statusTip() == '1':
             call_customer(self.username, pwd=self.pwd, register=True)
             QMessageBox.information(self, '提示', '恭喜你注册成功！！！')
+            logging_save(0, f"用户{self.username}注册成功")
             self.lineEdit.setText(_translate("Form", f"{self.username}"))
             self.lineEdit_2.setFocus()
             self.back_to_start()
