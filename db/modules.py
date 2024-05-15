@@ -1,3 +1,4 @@
+import time
 from lib.common import encrypt
 from db.db_handler import logging_check, account_entry, update_data, log_out
 
@@ -7,6 +8,7 @@ class BaseModel:
         self.username = username
         self.mode = 0
         self.pwd = encrypt(pwd+username)
+        self.register_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     def login_check(self):
         return logging_check(self)
