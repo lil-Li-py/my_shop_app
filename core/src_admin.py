@@ -2,6 +2,7 @@
 管理员网络视图层代码:
     直接与数据层进行交互
 """
+
 import time
 from functools import partial
 from PyQt6 import QtCore
@@ -12,6 +13,8 @@ from db.ui.admin import Ui_Form as AdminMixin
 from db.ui.items import Ui_Form as ItemsMixin
 from db.db_handler import admin
 from interface.customer import call_customer
+from interface.shopkeeper import call_shopkeeper
+from lib.common import logging_save
 
 _translate = QtCore.QCoreApplication.translate
 
@@ -71,6 +74,7 @@ class ManageWindow(ItemsMixin, QWidget):
         super(ManageWindow, self).__init__()
         self._info = info
         self._column = column
+        self._mode = 0 if self._column[0] == '用户名' else 1
         self.setupUi(self)
         self._insert_items()
 
@@ -99,7 +103,7 @@ class ManageWindow(ItemsMixin, QWidget):
                     else:
                         button = QPushButton()
                         button.setText(_translate("Form", f"{'解冻' if self._info[i][j] else '冻结'}"))
-                        button.clicked.connect(partial(self._do_frozen, item))  # type:ignore
+                        button.clicked.connect(partial(self._do_frozen, self._mode, item))  # type:ignore
                         self.tableWidget.setCellWidget(i, j, button)
                     self.tableWidget.setItem(i, j, item)
                 # 审核上架商品窗口
@@ -136,11 +140,16 @@ class ManageWindow(ItemsMixin, QWidget):
                     self.tableWidget.setItem(i, j, item)
 
     # 用户/商家的冻结/解冻方法
-    def _do_frozen(self, item):
+    def _do_frozen(self, mode, item):
         row = self.tableWidget.row(item)
         # 修改解冻或冻结
         is_frozen = 0 if self._info[row][1] else 1
-        call_customer(self._info[row][0], update=True, is_frozen=is_frozen)
+        if not mode:
+            logging_save(0, f"用户{self._info[row][0]}已被{'冻结' if is_frozen else '解冻'}")
+            call_customer(self._info[row][0], update=True, is_frozen=is_frozen)
+        else:
+            logging_save(1, f"商家{self._info[row][0]}已被{'冻结' if is_frozen else '解冻'}")
+            call_shopkeeper(self._info[row][0], update=True, is_frozen=is_frozen)
         QMessageBox.information(self, '提示', '修改成功')
         self.close()
 
