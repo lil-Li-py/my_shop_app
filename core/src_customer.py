@@ -1,6 +1,7 @@
 """
 顾客界面网络视图层代码
 """
+
 import configparser
 import time
 import os
@@ -16,6 +17,7 @@ from db.ui.user_setting import Ui_Form as UserSettingMixin
 from interface.customer import call_customer
 from interface.shopkeeper import call_shopkeeper
 from interface.common import PwdChangeWindow, call_item
+from lib.common import logging_save
 
 _translate = QtCore.QCoreApplication.translate
 font = QtGui.QFont()
@@ -149,6 +151,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
         now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         item_info = [item_name, shop_name, amount, now_time]
         self._shopping_cart.append(item_info)
+        logging_save(0, f"用户{self._username}将商品{item_name}(来自{shop_name})添加至购物车")
         QMessageBox.information(self, '提示', '添加购物车成功!')
 
     def _buy(self, item):
@@ -172,6 +175,8 @@ class CustomerUI(CustomerUiMixin, QWidget):
         self._points += price // 10 + 1
         self._purchased_items.append(item_info)
         call_shopkeeper(shop_name, update=True, income=price)
+        logging_save(1, f"商家{shop_name}收入金额{price}元")
+        logging_save(0, f"用户{self._username}购买商品{item_name}(来自{shop_name})")
         QMessageBox.information(self, '提示', '购买成功!')
 
     # 购物车界面操作
@@ -280,6 +285,8 @@ class CustomerUI(CustomerUiMixin, QWidget):
         purchased.insert(2, amount)
         purchased.append(now_time)
         self._purchased_items.append(purchased)
+        logging_save(1, f"商家{shop_name}收入金额{now_price}元")
+        logging_save(0, f"用户{self._username}购买商品{bought[0]}(来自{bought[1]})")
         QMessageBox.information(self, '提示', '购买成功!')
 
     def _remove_one_row(self, row):
@@ -289,6 +296,9 @@ class CustomerUI(CustomerUiMixin, QWidget):
         self._all_cost -= now_price
         self.label.setText(_translate("Form", f"总金额为: {self._all_cost:.2f}元."))
         self._shopping_cart.pop(row)
+        item_name = self.tableWidget_2.item(row, 0).text()
+        shop_name = self.tableWidget_2.item(row, 3).text()
+        logging_save(0, f"用户{self._username}将商品{item_name}(来自{shop_name})移除购物车")
 
     def buy_all(self):
         if not self._shopping_cart:
@@ -306,13 +316,15 @@ class CustomerUI(CustomerUiMixin, QWidget):
             call_shopkeeper(i[1], update=True, income=bought[1])
             bought.append(now_time)
             self._purchased_items.append(bought)
+            logging_save(1, f"商家{i[1]}收入金额{bought[1]}元")
+            logging_save(0, f"用户{self._username}购买商品{i[0]}(来自{i[1]})")
         self.clear_all()
         QMessageBox.information(self, '提示', '购买完成!')
 
     def clear_all(self):
-        if not self._shopping_cart:
-            return
-        self._shopping_cart = []
+        while self._shopping_cart:
+            tmp = self._shopping_cart.pop()
+            logging_save(0, f"用户{self._username}将商品{tmp[0]}(来自{tmp[1]})移除购物车")
         self._load_shopping_cart()
 
     # 我的界面操作
@@ -342,6 +354,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
         QMessageBox.information(self, '提示', '昵称设置成功!')
         self._nickname = nickname
         self.label_2.setText(_translate("Form", f"欢迎您 {self._nickname}"))
+        logging_save(0, f"用户{self._username}修改了昵称{self._nickname}")
 
     # 修改密码
     def change_password(self):
@@ -356,6 +369,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
         self._balance += balance
         self.pushButton_8.setText(_translate("Form", f"您的余额为:{self._balance}元"))
         QMessageBox.information(self, '提示', '充值成功!!!')
+        logging_save(0, f"用户{self._username}充值了{balance}元")
 
     # 查看已购买的商品
     def check_purchased_items(self):
@@ -383,6 +397,8 @@ class CustomerUI(CustomerUiMixin, QWidget):
             self._balance -= 1000
             call_shopkeeper(self._username, register=True)
             QMessageBox.information(self, '提示', '恭喜你注册成功!\n密码为空, 请尽快登录修改密码')
+            logging_save(1, f"商家{self._username}注册成功")
+            logging_save(0, f"用户{self._username}成功注册为商家")
             self.start.lineEdit.setText(_translate("Form", f"{self._username}"))
             self.start.checkBox.setChecked(True)
             self.show_start()
@@ -398,6 +414,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
         if res.name == 'Yes':
             call_customer(self._username, logout=True)
             QMessageBox.information(self, '提示', '注销成功')
+            logging_save(0, f"用户{self._username}注销成功")
             self.show_start()
 
     def save(self):
@@ -409,6 +426,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
     def closeEvent(self, event):
         self.save()
         event.accept()
+        logging_save(0, f"用户{self._username}成功退出")
         for i in [self._sub_window1, self._sub_window2, self._sub_window3]:
             if i:
                 i.close()
@@ -469,6 +487,7 @@ class UserSettingsWindow(UserSettingMixin, QWidget):
         diy = {'is_diy': True, 'bg': new_bg}
         # 整体修改了 diy 仍需完善
         call_customer(self._username, update=True, diy=diy)
+        logging_save(0, f"用户{self._username}成功设置了自定义背景图片")
         self.close()
 
 
