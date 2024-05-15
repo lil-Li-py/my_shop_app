@@ -1,6 +1,7 @@
 """
 商家网络视图层代码
 """
+
 import configparser
 import time
 from functools import partial
@@ -13,6 +14,7 @@ from db.ui.items import Ui_Form as ItemsMixin
 from interface.common import PwdChangeWindow
 from interface.shopkeeper import call_shopkeeper
 from interface.common import call_item
+from lib.common import logging_save
 
 _translate = QtCore.QCoreApplication.translate
 
@@ -36,11 +38,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
         self.delisted_items = eval(info[5])
         self.setupUi(self)
         self.setWindowTitle('商家')
-
-    @staticmethod
-    def _insert(ob, value, index):
-        for i in filter(lambda x: x[0] == index, ob):
-            i.append(value)
+        self.label.setText(_translate('Form', f"总收入为:{self.income}"))
 
     def list_items(self):
         self.edit_items = EditItems(self)
@@ -54,6 +52,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
         new_sub_pwd, status = QInputDialog.getText(self, '', '请输入你的新上架密码')
         if status and new_sub_pwd:
             QMessageBox.information(self, '提示', '设置成功')
+            logging_save(1, f"用户{self.username}成功设置了上架密码")
         else:
             return
 
@@ -80,6 +79,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
             call_shopkeeper(self.username, logout=True)
             call_item(log_out=True, shop_name=self.username, item_name=None)
             QMessageBox.information(self, '提示', '注销成功')
+            logging_save(1, f"商家{self.username}成功注销了此账号")
             self.show_start()
 
     def save(self):
@@ -89,6 +89,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
     def closeEvent(self, event):
         self.save()
         event.accept()
+        logging_save(1, f"商家{self.username}成功退出登录")
         for i in [self.listing, self.listed, self.delisted, self.sub_window1, self.edit_items]:
             if i:
                 i.close()
@@ -100,6 +101,7 @@ class EditItems(EditItemsMixin, QDialog):
     def __init__(self, father):
         super(EditItems, self).__init__()
         self.father = father
+        self.username = father.username
         self.name = ''
         self.price = 0
         self.setupUi(self)
@@ -143,6 +145,7 @@ class EditItems(EditItemsMixin, QDialog):
         self.father.listing_items.append([i for i in item_info.values()] + [now_time] + [[]])
         self.close()
         QMessageBox.information(self, '提示', '商品上架成功, 请等待审核')
+        logging_save(1, f"商家{self.username}上架了商品{self.name}(待审核)")
 
 
 class ListingItemsWindow(ItemsMixin, QWidget):
@@ -164,8 +167,8 @@ class ListingItemsWindow(ItemsMixin, QWidget):
         for i in self.items:
             if i[0] == item_name:
                 self.items.remove(i)
-        # call_shopkeeper(self.username, update=True, listing_items=self.items)
         QMessageBox.information(self, "提示", "取消上架成功")
+        logging_save(1, f"商家{self.username}取消上架了商品{item_name}")
 
     def acknowledge(self, item):
         row = self.tableWidget.row(item)
@@ -179,8 +182,9 @@ class ListingItemsWindow(ItemsMixin, QWidget):
                 i.extend([1, now_time])
                 self.listed_items.append(i)
                 call_item(*i, register=True)
-        # call_shopkeeper(self.username, update=True, listing_items=self.items, listed_items=self.listed_items)
         QMessageBox.information(self, "提示", "上架成功")
+        logging_save(1, f"商家{self.username}成功上架了商品{item_name}")
+        logging_save(2, f"商品{item_name}(来自{self.username})已成功上架")
 
 
 class ListedItemsWindow(ItemsMixin, QWidget):
@@ -207,8 +211,9 @@ class ListedItemsWindow(ItemsMixin, QWidget):
                 i.append(now_time)
                 self.delisted_items.append(i)
                 call_item(log_out=True, item_name=item_name, shop_name=self.username)
-        # call_shopkeeper(self.username, update=True, listed_items=self.items, delisted_items=self.delisted_items)
         QMessageBox.information(self, "提示", "下架成功")
+        logging_save(1, f"商家{self.username}下架了商品{item_name}")
+        logging_save(2, f"商品{item_name}(来自{self.username})已被下架")
 
 
 class DelistedItemsWindow(ItemsMixin, QWidget):
@@ -283,8 +288,3 @@ def insert_items(ob):
 def run(start, info):
     start.shopkeeper = ShopkeeperUI(start, info)
     start.shopkeeper.show()
-    # app = QApplication(sys.argv)
-    # shopkeeper = ShopkeeperUI(info)
-    # shopkeeper.show()
-    # sys.excepthook = except_hook
-    # sys.exit(app.exec())
