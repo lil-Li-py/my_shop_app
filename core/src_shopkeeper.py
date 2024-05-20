@@ -2,7 +2,6 @@
 商家网络视图层代码
 """
 
-import configparser
 import time
 from functools import partial
 from PyQt6 import QtCore
@@ -15,6 +14,7 @@ from interface.common import PwdChangeWindow
 from interface.shopkeeper import call_shopkeeper
 from interface.common import call_item
 from lib.common import logging_save
+
 
 _translate = QtCore.QCoreApplication.translate
 
@@ -52,6 +52,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
         new_sub_pwd, status = QInputDialog.getText(self, '', '请输入你的新上架密码')
         if status and new_sub_pwd:
             QMessageBox.information(self, '提示', '设置成功')
+            self.sub_pwd = new_sub_pwd
             logging_save(1, f"用户{self.username}成功设置了上架密码")
         else:
             return
@@ -99,6 +100,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
 
 class EditItems(EditItemsMixin, QDialog):
     def __init__(self, father):
+        import configparser
         super(EditItems, self).__init__()
         self.father = father
         self.username = father.username
@@ -267,7 +269,7 @@ def insert_items(ob):
                                 button.setText(_translate("Form", "上架"))
                             else:
                                 button.setText(_translate("Form", "已拒绝"))
-                                button.setToolTip(_translate("Form", f"{ob.items[i][j-1][1]}"))
+                                button.setToolTip(_translate("Form", f"拒绝原因:{ob.items[i][j-1][1]}"))
                                 button.setEnabled(False)
                             button.clicked.connect(partial(ob.acknowledge, item))  # type:ignore
                         else:
