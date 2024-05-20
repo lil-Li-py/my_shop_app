@@ -8,13 +8,13 @@ from functools import partial
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QWidget, QTableWidgetItem, QPushButton, QMessageBox, QTextEdit, QFrame, \
     QHBoxLayout, QInputDialog
-
 from db.ui.admin import Ui_Form as AdminMixin
 from db.ui.items import Ui_Form as ItemsMixin
 from db.db_handler import admin
 from interface.customer import call_customer
 from interface.shopkeeper import call_shopkeeper
 from lib.common import logging_save
+
 
 _translate = QtCore.QCoreApplication.translate
 
