@@ -1,8 +1,11 @@
 import sqlite3
 
 
-# 初始化数据库
-def init_data():
+def init_data() -> None:
+    """
+    初始化创建3个sqlite数据库
+    :return: 无返回
+    """
     """
     username : 用户名 :str
     password : 密码 :str
@@ -56,8 +59,12 @@ def init_data():
     cur.close()
 
 
-# 登录检索
-def logging_check(ob):
+def logging_check(ob) -> tuple:
+    """
+    登录检索
+    :param ob: Customers|Shopkeepers|Items类
+    :return: (返回码, 信息)
+    """
     dic = {0: 'customer', 1: 'shopkeeper', 2: 'item'}
     conn = sqlite3.connect(f'db/data/{dic[ob.mode]}.db')
     cur = conn.cursor()
@@ -99,8 +106,12 @@ def logging_check(ob):
     return 2, info
 
 
-# 账号录入
-def account_entry(ob):
+def account_entry(ob) -> None:
+    """
+    账号录入
+    :param ob: Customers|Shopkeepers|Items类
+    :return: None
+    """
     dic = {0: 'customer', 1: 'shopkeeper', 2: 'item'}
     conn = sqlite3.connect(f'db/data/{dic[ob.mode]}.db')
     cur = conn.cursor()
@@ -119,8 +130,13 @@ def account_entry(ob):
     cur.close()
 
 
-# 用户或商家信息更新
-def update_data(ob, **kwargs):
+def update_data(ob, **kwargs) -> None:
+    """
+    信息更新
+    :param ob: Customers|Shopkeepers|Items类
+    :param kwargs: 待更新的数据
+    :return: None
+    """
     dic = {0: 'customer', 1: 'shopkeeper', 2: 'item'}
     conn = sqlite3.connect(f'db/data/{dic[ob.mode]}.db')
     cur = conn.cursor()
@@ -136,7 +152,12 @@ def update_data(ob, **kwargs):
     cur.close()
 
 
-def log_out(ob):
+def log_out(ob) -> None:
+    """
+    注销
+    :param ob: Customers|Shopkeepers|Items类
+    :return: None
+    """
     dic = {0: 'customer', 1: 'shopkeeper', 2: 'item'}
     conn = sqlite3.connect(f'db/data/{dic[ob.mode]}.db')
     cur = conn.cursor()
@@ -151,8 +172,13 @@ def log_out(ob):
     cur.close()
 
 
-# 管理员专用
-def admin(mode: int, **kwargs):
+def admin(mode: int, **kwargs) -> list:
+    """
+    管理员专用直接数据更新
+    :param mode: 不同的模式 0->customer, 1->shopkeeper, 2->item
+    :param kwargs:
+    :return:
+    """
     info = []
     if not mode:
         conn = sqlite3.connect('db/data/customer.db')
