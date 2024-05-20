@@ -4,41 +4,53 @@ from db.db_handler import logging_check, account_entry, update_data, log_out
 
 
 class BaseModel:
+    """
+    Customers|Shopkeepers|Items的基类
+    """
     def __init__(self, username='', pwd=''):
         self.username = username
-        self.mode = 0
         self.pwd = encrypt(pwd+username)
         self.register_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    def login_check(self):
+    # 数据检索方法
+    def login_check(self) -> None | tuple:
         return logging_check(self)
 
-    def save(self):
+    # 数据保存方法
+    def save(self) -> None:
         account_entry(self)
 
-    def update(self, **kwargs):
+    # 数据更新方法
+    def update(self, **kwargs) -> None:
         update_data(self, **kwargs)
 
-    def log_out(self):
+    # 注销方法
+    def log_out(self) -> None:
         log_out(self)
 
 
-# 顾客
 class Customers(BaseModel):
+    """
+    顾客类
+    """
     def __init__(self, username, pwd):
         super().__init__(username, pwd)
         self.mode = 0
 
 
-# 商家
 class Shopkeepers(BaseModel):
+    """
+    商家类
+    """
     def __init__(self, username, pwd):
         super().__init__(username, pwd)
         self.mode = 1
 
 
-# 物品类
 class Items(BaseModel):
+    """
+    物品类
+    """
     def __init__(self, **kwargs):
         super().__init__()
         self.item_info = None
@@ -54,6 +66,7 @@ class Items(BaseModel):
         except KeyError:
             self.sort = None
 
-    def save(self, *args):
+    # 重写了数据保存方法
+    def save(self, *args) -> None:
         self.item_info = args
         account_entry(self)
