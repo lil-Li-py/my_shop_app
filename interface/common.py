@@ -39,7 +39,7 @@ def call_item(*args, register=False, update=False, log_out=False, **kwargs) -> N
 
 class PwdChangeWindow(PwdChangeMixin, QDialog):
     """
-    修改密码窗口
+    密码修改窗口
     """
     def __init__(self, username, father):
         super(PwdChangeWindow, self).__init__()
