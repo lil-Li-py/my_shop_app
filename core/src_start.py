@@ -2,7 +2,6 @@
 开始页面网络视图层代码
 """
 
-import sys
 import re
 import time
 from PyQt6 import QtCore
@@ -13,6 +12,7 @@ from core import src_customer, src_shopkeeper, src_admin
 from interface.customer import call_customer
 from interface.shopkeeper import call_shopkeeper
 from lib.common import logging_save
+
 
 _translate = QtCore.QCoreApplication.translate
 
@@ -54,6 +54,7 @@ class StartUi(LoginUiMixin, QWidget):
                 self.lineEdit_2.clear()
                 if info[-1]:
                     QMessageBox.warning(self, '警告', f'抱歉账户{username}已被冻结!!!')
+                    self.lineEdit.setFocus()
                     return
                 QMessageBox.information(self, '提示', '登录成功, 等待跳转')
                 if self.checkBox.isChecked():
@@ -145,6 +146,7 @@ class StartUi(LoginUiMixin, QWidget):
 
 
 def run():
+    import sys
     app = QApplication(sys.argv)
     login_window = StartUi()
     login_window.show()
