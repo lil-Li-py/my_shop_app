@@ -2,12 +2,8 @@
 顾客界面网络视图层代码
 """
 
-import configparser
 import time
-import os
-import random
 from functools import partial
-import requests
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QWidget, QMessageBox, QTableWidgetItem, QPushButton, QFrame, QHBoxLayout, \
     QInputDialog, QFileDialog, QTextEdit, QVBoxLayout
@@ -19,6 +15,7 @@ from interface.shopkeeper import call_shopkeeper
 from interface.common import PwdChangeWindow, call_item
 from lib.common import logging_save
 
+
 _translate = QtCore.QCoreApplication.translate
 font = QtGui.QFont()
 font.setPointSize(10)
@@ -26,6 +23,7 @@ font.setPointSize(10)
 
 class CustomerUI(CustomerUiMixin, QWidget):
     def __init__(self, start, info):
+        import configparser
         self._sub_window1 = None
         self._sub_window2 = None
         self._sub_window3 = None
@@ -45,6 +43,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
         super(CustomerUI, self).__init__()
         self.setupUi(self)
         self.setWindowTitle('傻逼')
+        self.default_items = self._get_default_items()
         self._init_bg(self._diy)
         self.refresh_text()
         config = configparser.ConfigParser()
@@ -53,7 +52,15 @@ class CustomerUI(CustomerUiMixin, QWidget):
         self._open_shop()
         self._get_items(self._sort[0])
 
+    @staticmethod
+    def _get_default_items():
+        import pickle
+        with open('db/default_items.p', 'rb') as f:
+            return pickle.load(f)
+
     def _init_bg(self, diy):
+        import random
+        import os
         # 判断默认背景目录是否为空
         if not (default := os.listdir('imgs/customer/bg')):
             return
@@ -104,7 +111,12 @@ class CustomerUI(CustomerUiMixin, QWidget):
 
     # 每次点击标签刷新table widget里的数据
     def _get_items(self, sort_name):
+        # 从默认商品中添加
+        for i in (default_items := self.default_items[sort_name]):
+            i.extend(['admin', None, 1])
+        # 从商家中添加
         items = call_item(sort=sort_name)
+        items = default_items + items
         self.tableWidget.setRowCount(length := len(items))
         for i in range(length):
             item = QTableWidgetItem()
@@ -166,6 +178,9 @@ class CustomerUI(CustomerUiMixin, QWidget):
             return
         item_name = self.tableWidget.item(row, 0).text()
         shop_name = self.tableWidget.item(row, 2).text()
+        QMessageBox.information(self, '提示', '购买成功!')
+        if shop_name == 'admin':
+            return
         item_info = list(call_item(item_name=item_name, shop_name=shop_name))
         item_info.pop()
         item_info.insert(2, amount)
@@ -177,7 +192,6 @@ class CustomerUI(CustomerUiMixin, QWidget):
         call_shopkeeper(shop_name, update=True, income=price)
         logging_save(1, f"商家{shop_name}收入金额{price}元")
         logging_save(0, f"用户{self._username}购买商品{item_name}(来自{shop_name})")
-        QMessageBox.information(self, '提示', '购买成功!')
 
     # 购物车界面操作
     # 展示：商家名 价格 商家 类型 简介 添加时间
@@ -265,12 +279,16 @@ class CustomerUI(CustomerUiMixin, QWidget):
 
     def _buy_it(self, row):
         row = self.tableWidget_2.row(row)
-        now_price = eval(self.tableWidget_2.item(row, 1).text().split('&')[1]) * eval(self.tableWidget_2.item(row, 2).text())
+        now_price = eval(self.tableWidget_2.item(row, 1).text().split('&')[1]) * eval(
+            self.tableWidget_2.item(row, 2).text())
         if self._balance < now_price:
             QMessageBox.warning(self, '警告', '您当前的余额不足\n请充值!!!')
             return
         amount = self.tableWidget_2.item(row, 1).text()
         shop_name = self.tableWidget_2.item(row, 3).text()
+        QMessageBox.information(self, '提示', '购买成功!')
+        if shop_name == 'admin':
+            return
         call_shopkeeper(shop_name, update=True, income=now_price)
         self._balance -= now_price
         self._all_cost -= now_price
@@ -287,7 +305,6 @@ class CustomerUI(CustomerUiMixin, QWidget):
         self._purchased_items.append(purchased)
         logging_save(1, f"商家{shop_name}收入金额{now_price}元")
         logging_save(0, f"用户{self._username}购买商品{bought[0]}(来自{bought[1]})")
-        QMessageBox.information(self, '提示', '购买成功!')
 
     def _remove_one_row(self, row):
         row = self.tableWidget_2.row(row)
@@ -333,6 +350,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
         self.pushButton_8.setText(_translate("Form", f"您的余额为:{self._balance}元"))
 
     def refresh_text(self):
+        import requests
         res = requests.get('https://v.api.aa1.cn/api/tiangou/index.php')
         if res.status_code != 200:
             text = ''
@@ -378,7 +396,7 @@ class CustomerUI(CustomerUiMixin, QWidget):
 
     # 打开积分商城
     def open_points_mall(self):
-        ...
+        QMessageBox.about(self, '', 'sorry, to be constructed')
 
     # 自定义背景图片
     def user_setting(self):
