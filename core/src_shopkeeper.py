@@ -49,7 +49,7 @@ class ShopkeeperUI(ShopKeeperMixin, QWidget):
         self.sub_window1.show()
 
     def change_sub_pwd(self):
-        new_sub_pwd, status = QInputDialog.getText(self, '', '请输入你的新上架密码')
+        new_sub_pwd, status = QInputDialog.getText(self, ' ', '请输入你的新上架密码')
         if status and new_sub_pwd:
             QMessageBox.information(self, '提示', '设置成功')
             self.sub_pwd = new_sub_pwd

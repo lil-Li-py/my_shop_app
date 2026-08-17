@@ -141,7 +141,6 @@ def update_data(ob, **kwargs) -> None:
     conn = sqlite3.connect(f'db/data/{dic[ob.mode]}.db')
     cur = conn.cursor()
     try:
-        kwargs['income']
         income = cur.execute("select income from data where username = ?", (ob.username,)).fetchone()[0]
         kwargs['income'] += income
     except KeyError:

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>150</y>
+     <width>161</width>
+     <height>330</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>15</number>
+    </property>
+    <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>上架商品</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="text">
+       <string>修改密码</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>总收入</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="text">
+       <string>修改上架密码</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="text">
+       <string>查看正在审核的商品</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_5">
+      <property name="text">
+       <string>查看已上架的商品</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_6">
+      <property name="text">
+       <string>查看已下架的商品</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="text">
+       <string>退出登录</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_8">
+      <property name="text">
+       <string>注销</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>list_items()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>284</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>142</x>
+     <y>145</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>change_pwd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>change_sub_pwd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>294</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>142</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>check_listing_items()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>271</x>
+     <y>312</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>83</x>
+     <y>327</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>check_listed_items()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>281</x>
+     <y>349</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>121</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>check_delisted_items()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>288</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>114</x>
+     <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>show_start()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>428</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>132</x>
+     <y>447</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_8</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>log_out()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>465</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>88</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>list_items()</slot>
+  <slot>change_pwd()</slot>
+  <slot>change_sub_pwd()</slot>
+  <slot>check_listing_items()</slot>
+  <slot>check_listed_items()</slot>
+  <slot>check_delisted_items()</slot>
+  <slot>show_start()</slot>
+  <slot>log_out()</slot>
+ </slots>
+</ui>

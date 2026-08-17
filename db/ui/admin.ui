@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>160</y>
+     <width>81</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>审核商品</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>80</y>
+     <width>101</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查看所有用户</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>120</y>
+     <width>101</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查看所有商家</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>verify_listing_items()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>167</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>67</x>
+     <y>167</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>check_all_shopkeepers()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>159</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>36</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>check_all_customers()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>172</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>40</x>
+     <y>83</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>verify_listing_items()</slot>
+  <slot>check_all_customers()</slot>
+  <slot>check_all_shopkeepers()</slot>
+ </slots>
+</ui>
